@@ -10,6 +10,7 @@ MODIFICATION LOG:
 Ver   Date        Author    Description
 ----  ----------  -------   -----------------------------------------------------------------
 1.0   11/04/2019  ESOARES   1. Built this script to create the view [dbo].[v_transactions_at_other_branches].
+1.1   11/06/2019  ESOARES   1. Added the column "primary_branch_?"
 
 RUNTIME: 
 1 min
@@ -35,7 +36,10 @@ AS
            (cd.[cust_first_name] + ' ' + [cust_last_name]) AS customer_name,
            cd.[primary_branch_id] AS primary_branch,
            tf.[branch_id] AS trans_branch,
-		   COUNT(tf.[transaction_date]) AS #_of_transactions
+		   COUNT(tf.[transaction_date]) AS #_of_transactions,
+		   case when cd.[primary_branch_id] = tf.[branch_id] then 'YES'
+		   else 'NO'
+		   END AS 'primary_branch_?'
     FROM [dbo].[t_customer_dim] AS cd
          JOIN [dbo].[t_customer_account_dim] AS cad ON cd.cust_id = cad.cust_id
          JOIN [dbo].[t_transaction_fact] AS tf ON tf.acct_id = cad.acct_id
