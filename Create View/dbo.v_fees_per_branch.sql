@@ -30,10 +30,11 @@ GO
 CREATE VIEW v_fees_per_branch
 AS
 (
-    SELECT [branch_id], 
-           CONVERT(DECIMAL(15, 3), SUM([transaction_amt])) AS total_of_transactions, 
-           SUM([transaction_fee_amt]) AS total_of_fees, 
-           CONVERT(DECIMAL(3, 2), (SUM([transaction_fee_amt]) / SUM([transaction_amt]) * 100)) AS percentual
-    FROM [dbo].[t_transaction_fact]
-    GROUP BY [branch_id]
+    SELECT bd.branch_description, 
+           CONVERT(DECIMAL(15, 3), SUM(tf.[transaction_amt])) AS total_of_transactions, 
+           SUM(tf.[transaction_fee_amt]) AS total_of_fees, 
+           CONVERT(DECIMAL(3, 2), (SUM(tf.[transaction_fee_amt]) / SUM(tf.[transaction_amt]) * 100)) AS percentual
+    FROM [dbo].[t_transaction_fact] AS tf
+	JOIN [dbo].[t_branch_dim] AS bd ON tf.branch_id = bd.branch_id
+    GROUP BY bd.branch_description
 );
