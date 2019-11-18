@@ -11,10 +11,10 @@ Ver   Date        Author    Description
 ----  ----------  -------   -----------------------------------------------------------------
 1.0   10/22/2019  ESOARES   1. Built this script to load the tables in DFNB2 database and set PKs and FKs.
 1.1   10/26/2019  ESOARES   1. Added statements to drop existing constraints before loading the data.
-							2. Switched "truncate table" for "delete from"
+			    2. Switched "truncate table" to "delete from"
 1.2   11/02/2019  ESOARES   1. Added statements to drop existing constraints in t_transaction_fact and t_transaction_type_dim.
-							2. Added statements to load data into t_transaction_fact and t_transaction_type_dim.
-							3. Added statements to add constraints to t_transaction_fact and t_transaction_type_dim.
+			    2. Added statements to load data into t_transaction_fact and t_transaction_type_dim.
+			    3. Added statements to add constraints to t_transaction_fact and t_transaction_type_dim.
 
 RUNTIME: 
 2 min
