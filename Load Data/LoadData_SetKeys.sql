@@ -11,10 +11,13 @@ Ver   Date        Author    Description
 ----  ----------  -------   -----------------------------------------------------------------
 1.0   10/22/2019  ESOARES   1. Built this script to load the tables in DFNB2 database and set PKs and FKs.
 1.1   10/26/2019  ESOARES   1. Added statements to drop existing constraints before loading the data.
-			    2. Switched "truncate table" to "delete from"
+							2. Switched "truncate table" to "delete from"
 1.2   11/02/2019  ESOARES   1. Added statements to drop existing constraints in t_transaction_fact and t_transaction_type_dim.
-			    2. Added statements to load data into t_transaction_fact and t_transaction_type_dim.
-			    3. Added statements to add constraints to t_transaction_fact and t_transaction_type_dim.
+							2. Added statements to load data into t_transaction_fact and t_transaction_type_dim.
+							3. Added statements to add constraints to t_transaction_fact and t_transaction_type_dim.
+1.3   12/13/2019  ESOARES   1. Added statements to drop existing constraints in t_account_fact_sum.
+							2. Added statements to load data into t_account_fact_sum.
+							3. Added statements to add constraints to t_account_fact_sum.
 
 RUNTIME: 
 2 min
@@ -42,6 +45,12 @@ DROP CONSTRAINT FK_t_account_dim_t_branch_dim;
 IF (OBJECT_ID('FK_t_account_dim_t_product_dim') IS NOT NULL)
 ALTER TABLE t_account_dim
 DROP CONSTRAINT FK_t_account_dim_t_product_dim;
+
+/*******************************************************************************************/
+
+IF (OBJECT_ID('FK_t_account_fact_sum_t_account_dim') IS NOT NULL)
+ALTER TABLE t_account_fact_sum
+DROP CONSTRAINT FK_t_account_fact_sum_t_account_dim;
 
 /*******************************************************************************************/
 
@@ -153,6 +162,22 @@ INSERT INTO t_account_fact
        GROUP BY [as_of_date], 
                 [acct_id], 
                 [cur_bal]
+       ORDER BY 2, 
+                1;
+
+/*******************************************************************************************/
+
+DELETE FROM t_account_fact_sum
+INSERT INTO t_account_fact_sum
+(as_of_date, 
+ acct_id, 
+ balance
+)
+       SELECT MAX([as_of_date]), 
+              [acct_id], 
+              SUM([cur_bal])
+       FROM [dbo].[stg_p1]
+       GROUP BY [acct_id]
        ORDER BY 2, 
                 1;
 
@@ -520,6 +545,12 @@ FOREIGN KEY( product_id ) REFERENCES t_product_dim( product_id );
 
 ALTER TABLE t_account_fact
 ADD CONSTRAINT FK_t_account_fact_t_account_dim
+FOREIGN KEY( acct_id ) REFERENCES t_account_dim( acct_id );
+
+/*******************************************************************************************/
+
+ALTER TABLE t_account_fact_sum
+ADD CONSTRAINT FK_t_account_fact_sum_t_account_dim
 FOREIGN KEY( acct_id ) REFERENCES t_account_dim( acct_id );
 
 /*******************************************************************************************/
